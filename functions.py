@@ -1,16 +1,19 @@
+from main import display
 import vars
 
 
 def read_input(char):
+    print('entry - yes')        # Currently, we are unable to get here
     vars.state = vars.automaton_graph[vars.state][char]['new_state']
     vars.automaton_graph[vars.state][char]['command']()
     # TODO: I should put vars.res into vars.nums to simplify this
     if vars.state == 0:
         vars.cur_num = vars.nums[0]
     elif vars.state == 1:
-        vars.cur_num = vars.nums[0]
+        vars.cur_num = vars.nums[1]
     elif vars.state == 2:
         vars.cur_num = vars.res
+    display.configure(text=vars.cur_num)
 
 
 def modify_num(char):
@@ -60,3 +63,27 @@ def clear_entry():
     elif vars.state == 2:
         pass
     pass
+
+
+for state in range(vars.num_of_states):
+    vars.automaton_graph[state] = {}
+    for char in vars.alphabet:
+        if char.isdigit():
+            if state != 2:
+                vars.automaton_graph[state][char]: {'new_state': state, 'command': lambda: modify_num(char)}
+            else:
+                vars.automaton_graph[state][char]: {'new_state': 0, 'command': lambda: modify_num(char)}
+        elif char in ['+', '-', '*', '/']:
+            if state == 0:
+                vars.automaton_graph[state][char]: {'new_state': 1, 'command': lambda: modify_operation(char)}
+            elif state == 1:
+                vars.automaton_graph[state][char]: {'new_state': 1, 'command': lambda: modify_operation(char)}
+            elif state == 2:
+                vars.automaton_graph[state][char]: {'new_state': 1, 'command': lambda: keep_and_modify_operation(char)}
+        elif char == '=':
+            if state != 1:
+                vars.automaton_graph[state][char]: {'new_state': state, 'command': lambda: None}
+            else:
+                vars.automaton_graph[state][char]: {'new_state': 2, 'command': lambda: calculate()}
+        elif char == 'CE':
+            vars.automaton_graph[state][char]: {'new_state': state, 'command': lambda: clear_entry()}

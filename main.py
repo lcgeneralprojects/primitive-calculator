@@ -1,4 +1,4 @@
-from tkinter import Tk, Frame, Button, Label
+from tkinter import Tk, Frame, Button, Label, StringVar
 import vars
 
 root = Tk()
@@ -12,7 +12,7 @@ root.columnconfigure(0, weight=1)
 display_frame = Frame()
 display_frame.grid(row=0, column=0, padx=5, ipadx=5, sticky='nsew')
 
-display = Label(display_frame, textvariable=vars.cur_num)
+display = Label(display_frame, text=0)
 display.grid(sticky='nsew')
 
 button_frame = Frame()
