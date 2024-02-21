@@ -1,8 +1,6 @@
 from tkinter import Tk, Frame, Button, Label
-from functools import partial
-from common import root, display_frame, button_frame, display, buttons, alphabet, extractor_read_input, read_input
+from common import root, display_frame, button_frame, displays, buttons, ALPHABET, extractor_read_input, read_input
 
-# root = Tk()
 root.title('Primitive Calculator')
 root.configure(background='grey')
 root.geometry('350x500')
@@ -10,27 +8,24 @@ root.rowconfigure(0, weight=1)
 root.rowconfigure(1, weight=4)
 root.columnconfigure(0, weight=1)
 
-# display_frame = Frame()
 display_frame.grid(row=0, column=0, padx=5, ipadx=5, sticky='nsew')
+for i in range(1): display_frame.columnconfigure(i, weight=1)
+for i in range(len(displays)): display_frame.rowconfigure(i, weight=1)
+display_frame.rowconfigure(len(displays), weight=3)
 
-# display = Label(display_frame, text=0)
-display.configure(text=0)
-display.grid(sticky='nsew')
+for i in range(len(displays)):
+    displays[i].grid(row=i, column=0, sticky='nsew')
 
 # button_frame = Frame()
 button_frame.grid(row=1, column=0, padx=5, ipadx=5, sticky='nsew')
 
-# buttons = {}
-# alphabet = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+# ALPHABET = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 #             '+', '-', '*', '/', '=', 'CE', 'C', '⌫', '+/-', ',']
-
-# button_frame.columnconfigure(tuple(range(4)), weight=1)
-# button_frame.rowconfigure(tuple(range(4)), weight=1)
 
 for i in range(5): button_frame.columnconfigure(i, weight=1)
 for i in range(4): button_frame.rowconfigure(i, weight=1)
 
-for index, char in enumerate(alphabet):
+for index, char in enumerate(ALPHABET):
     buttons[char] = (Button(button_frame, text=char, command=lambda c=char: read_input(c)))
     if char.isdigit():
         if char != '0':
@@ -55,8 +50,8 @@ for index, char in enumerate(alphabet):
         elif char == '⌫':
             buttons[char].grid(row=0, column=4, sticky='nsew')
         elif char == '+/-':
-            buttons[char].grid(row=4, column=0, sticky='nsew')
+            buttons[char].grid(row=3, column=0, sticky='nsew')
         elif char == '.':
-            buttons[char].grid(row=4, column=2, sticky='nsew')
+            buttons[char].grid(row=3, column=2, sticky='nsew')
 
 root.mainloop()
