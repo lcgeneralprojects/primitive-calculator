@@ -2,36 +2,37 @@
 
 # The graph of state transitions for the automaton should have
 # the following format: {state: {char: {'new_state': integer, 'command': command}}}
-from tkinter import Tk, Frame, Label, StringVar
+from tkinter import Tk, Frame, Label, StringVar, font
 
-num_of_states = 3
+NUM_OF_STATES = 3
 automaton_state = 0
 
-# nums = [0, 0]
-# cur_num = 0
-# operation = ''
-
-# res = 0
+ALPHABET = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+            '+', '-', '*', '/', '=', 'CE', 'C', '⌫', '+/-', '.']
+DEFAULTS = {'nums_string_1': '0', 'nums_string_2': '', 'operation_string': '', 'automaton_state': 0}
 
 root = Tk()
 display_frame = Frame()
 button_frame = Frame()
-nums_string_1 = StringVar(root, value='0')
-nums_string_2 = StringVar(root, value='0')
-operation_string = StringVar(root, value='+')
+nums_string_1 = StringVar(root, value=DEFAULTS['nums_string_1'])
+nums_string_2 = StringVar(root, value=DEFAULTS['nums_string_2'])
+operation_string = StringVar(root, value=DEFAULTS['operation_string'])
 
+# Adding dummy fonts for the sake of adjustments in the future and better readability right now
+fonts = []
+fonts.append(font.Font())   # For nums_string_2
+fonts.append(font.Font())   # For operation_string
+fonts.append(font.Font(size=24))
 displays = []
-displays.append(Label(display_frame, textvariable=nums_string_1, relief='sunken', anchor='se', justify='right'))
-# TODO: add display_2 and display_operation and make them invisible in state 0
+displays.append(Label(display_frame, textvariable=nums_string_2, anchor='ne', justify='right', font=fonts[0]))
+displays.append(Label(display_frame, textvariable=operation_string, anchor='e', justify='right', font=fonts[1]))
+displays.append(Label(display_frame, textvariable=nums_string_1, anchor='se', justify='right', font=fonts[2]))
 buttons = {}
 
-ALPHABET = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-            '+', '-', '*', '/', '=', 'CE', 'C', '⌫', '+/-', '.']
-DEFAULTS = {'nums_string_1': '0', 'nums_string_2': '0', 'operation_string': '+', 'automaton_state': 0}
 
 automaton_graph = {}
 
-for state in range(num_of_states):
+for state in range(NUM_OF_STATES):
     automaton_graph[state] = {}
     for char in ALPHABET:
         if char.isdigit():
@@ -69,32 +70,14 @@ def extractor_read_input(character):
 
 def read_input(character):
     global automaton_state
-    # global cur_num
     global automaton_graph
     automaton_graph[automaton_state][character]['command']()
     automaton_state = automaton_graph[automaton_state][character]['new_state']
-    # # TODO: I should put res into nums to simplify this
-    # if automaton_state == 0:
-    #     cur_num = nums[0]
-    # elif automaton_state == 1:
-    #     cur_num = nums[1]
-    # elif automaton_state == 2:
-    #     cur_num = res
-    # display_1.configure(text=cur_num)
 
 
 def modify_num(character):
-    # global nums
     global nums_string_1
     global automaton_state
-    # # TODO: translate the current number into a string, append the number, and then back
-    # if automaton_state == 0:
-    #     nums[0] = nums[0]*10 + int(character)
-    # elif automaton_state == 1:
-    #     nums[1] = nums[1]*10 + int(character)
-    # else:
-    #     nums = [0, 0]
-    #     nums[0] = int(character)
     nums_value_1 = nums_string_1.get()
     if automaton_state != 2 and nums_value_1 != '0':
         nums_string_1.set(nums_value_1 + character)
@@ -105,13 +88,9 @@ def modify_num(character):
 
 
 def modify_operation(character):
-    # # TODO: consider a good way of making the input number negative. Either via pressing '-' while the current number
-    # #  is 0, or by introducing an additional '+/-' button
-    # global operation
     global nums_string_1
     global nums_string_2
     global operation_string
-    # operation = character
     operation_string.set(character)
     nums_string_2.set(nums_string_1.get())
     nums_string_1.set(DEFAULTS['nums_string_1'])
@@ -119,14 +98,10 @@ def modify_operation(character):
 
 # This one is for when we have calculated something and want to keep the result
 def keep_and_modify_operation(character):
-    # global nums
-    # global operation
     global automaton_state
     global nums_string_1
     global nums_string_2
     global operation_string
-    # nums = [res, 0]
-    # operation = character
     nums_string_2.set(nums_string_1.get())
     nums_string_1.set(DEFAULTS[nums_string_1])
     operation_string.set(character)
@@ -134,22 +109,9 @@ def keep_and_modify_operation(character):
 
 
 def calculate():
-    # global operation
-    # global res
     global operation_string
     global nums_string_1
     global nums_string_2
-    # if operation == '+':
-    #     res = nums[0] + nums[1]
-    # elif operation == '-':
-    #     res = nums[0] - nums[1]
-    # elif operation == '*':
-    #     res = nums[0] * nums[1]
-    # elif operation == '/':
-    #     if nums[1] == 0:
-    #         res = 'ERR: div by 0'
-    #     else:
-    #         res = nums[0] / nums[1]
     operation = operation_string.get()
     res = 0
     if operation == '+':
@@ -166,7 +128,6 @@ def calculate():
     nums_string_2.set(nums_string_1.get())
     nums_string_1.set(res)
     nums_value_1 = nums_string_1.get()
-    # The following is done to present integers without the decimal dot and trailing zero
     if nums_value_1[-2:] == '.0':
         nums_string_1.set(nums_value_1[:-2])
 
@@ -176,19 +137,9 @@ def calculate():
 # If nums_string_1 == 0, then we set everything to default
 def clear_entry():
     global automaton_state
-    # global nums
     global nums_string_1
     global nums_string_2
     global operation_string
-    # if automaton_state == 0:
-    #     nums[0] = nums[0] // 10
-    # elif automaton_state == 1:
-    #     if nums[1] == 0:
-    #         automaton_state = 1
-    #
-    # elif automaton_state == 2:
-    #     pass
-    # pass
     if nums_string_1.get() != '0':
         nums_string_1.set('0')
     elif automaton_state != 0:
@@ -210,8 +161,6 @@ def backspace():
     elif automaton_state == 1:
         partial_reset()
     elif automaton_state == 2:
-        # Here we simply set nums_string_2 and operation_string to their defaults
-        # This is done to mirror the behaviour of the default Windows calculator
         nums_string_2.set(nums_string_1.get()) # This is done so that nums_string_1 does not change
         partial_reset()
 
