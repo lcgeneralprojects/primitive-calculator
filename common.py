@@ -132,7 +132,6 @@ def calculate():
         nums_string_1.set(nums_value_1[:-2])
 
 
-
 # This function is meant to set nums_string_1 to 0
 # If nums_string_1 == 0, then we set everything to default
 def clear_entry():
